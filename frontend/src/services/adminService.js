@@ -1,91 +1,50 @@
-import axios from "axios";
-import AuthService from "./auth.service";
-import API_BASE_URL from "./auth.config";
+import axios from 'axios';
+import AuthService from './authService'; // Assuming there's an AuthService for handling authentication
+import { API_BASE_URL } from '../config'; // Assuming there's a config file for API base URL
 
-const getAllTransactions = (pagenumber, pageSize, searchKey) => {
-    return axios.get(
-        API_BASE_URL + "/transaction/getAll",
-        {
+// Fetch details of a category by its ID
+export const fetchCategoryById = async (categoryId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/category/getById`, {
             headers: AuthService.authHeader(),
             params: {
-                pageNumber: pagenumber,
-                pageSize: pageSize,
-                searchKey: searchKey
-            }
-        }
-    )
-}
+                categoryId: categoryId,
+            },
+        });
 
-const getAllUsers = (pagenumber, pageSize, searchKey) => {
-    return axios.get(
-        API_BASE_URL + "/user/getAll",
-        {
-            headers: AuthService.authHeader(),
-            params: {
-                pageNumber: pagenumber,
-                pageSize: pageSize,
-                searchKey: searchKey
-            }
+        if (response.status === 200) {
+            return response.data; // Assuming the data structure contains the category information
+        } else {
+            throw new Error('Failed to fetch category details.'); // Handle unsuccessful responses
         }
-    )
-}
+    } catch (error) {
+        console.error("Error fetching category details:", error);
+        throw error; // Rethrow error for further handling
+    }
+};
 
-const disableOrEnableUser = (userId) => {
-    return axios.delete(
-        API_BASE_URL + "/user/disable",
-        {
-            headers: AuthService.authHeader(),
-            params: {
-                userId: userId
-            }
-        }
-    )
-}
-
-const getAllcategories = () => {
-    return axios.get(
-        API_BASE_URL + '/category/getAll', 
-        {
-            headers: AuthService.authHeader()
-        }
-    )
-}
-
-const updatecategory = (categoryId, categoryName, transactionTypeId) => {
-    return axios.put(
-        API_BASE_URL + '/category/update', 
-        {
-            categoryName: categoryName,
-            transactionTypeId: transactionTypeId
-        },
-        {
-            headers: AuthService.authHeader(),
-            params: {
-                categoryId: categoryId
-            }
-        }
-    )
-}
-
-const disableOrEnableCategory = (categoryId) => {
+// Existing function to disable or enable a category
+export const disableOrEnableCategory = (categoryId) => {
     return axios.delete(
         API_BASE_URL + "/category/delete",
         {
             headers: AuthService.authHeader(),
-            params: {
-                categoryId: categoryId
-            }
+            params: { categoryId: categoryId },
         }
-    )
-}
+    );
+};
 
-const AdminService = {
-    getAllTransactions,
-    getAllUsers,
-    disableOrEnableUser,
-    getAllcategories,
-    updatecategory,
-    disableOrEnableCategory,
-}
-
-export default AdminService;
+// Existing function to update a category
+export const updateCategory = (categoryId, categoryName, transactionTypeId) => {
+    return axios.put(
+        API_BASE_URL + '/category/update',
+        {
+            categoryName: categoryName,
+            transactionTypeId: transactionTypeId,
+        },
+        {
+            headers: AuthService.authHeader(),
+            params: { categoryId: categoryId },
+        }
+    );
+};
